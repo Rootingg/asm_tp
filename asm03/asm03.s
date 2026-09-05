@@ -19,7 +19,7 @@ _start:
 
     mov rax, 1
     mov rdi, 1
-    mov rsi, msg
+    mov rsi, message
     mov rdx, 4
     syscall
 
