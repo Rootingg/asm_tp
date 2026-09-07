@@ -6,16 +6,16 @@ _start:
     mov rdx, 0            
 
 count:
-    cmp byte [rsi + rdx], 0 
-    je write
+    cmp byte [rsi + rdx], 0
+    je add_newline
     inc rdx
     jmp count
 
-write:
-    mov rax, 1             
-    mov rdi, 1              
-    syscall
+add_newline:
+    mov byte [rsi + rdx], 10
+    inc rdx
 
-    mov rax, 60             
-    xor rdi, rdi            
+write:
+    mov rax, 1
+    mov rdi, 1
     syscall
