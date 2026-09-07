@@ -1,5 +1,5 @@
 section .data
-    message db "1337"
+    message db "1337", 13, 10, 0   
 
 section .text
 global _start
@@ -20,7 +20,7 @@ _start:
     mov rax, 1
     mov rdi, 1
     mov rsi, message
-    mov rdx, 4
+    mov rdx, 6
     syscall
 
     mov rax, 60
