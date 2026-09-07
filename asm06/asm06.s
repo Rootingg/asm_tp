@@ -31,12 +31,14 @@ parse_arg2_loop:
     add r9, rax
     inc rsi
     jmp parse_arg2_loop
-
 addition:
     add r8, r9
     mov rax, r8
     lea rsi, [buf + 32]
+    dec rsi
+    mov byte [rsi], 10     
     xor rcx, rcx
+    inc rcx                
     mov r10, 10
 
 convert:
@@ -53,7 +55,6 @@ convert:
     mov rdi, 1
     mov rdx, rcx
     syscall
-
     mov rax, 60
     xor rdi, rdi
     syscall
