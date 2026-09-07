@@ -3,7 +3,7 @@ global _start
 
 _start:
     mov rsi, [rsp + 16]    
-    xor rdx, rdx            
+    mov rdx, 0            
 
 count:
     cmp byte [rsi + rdx], 0 
