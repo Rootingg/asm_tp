@@ -1,19 +1,21 @@
-section .bss
-    buf resb 16
-
 section .text
 global _start
 
-_start: 
-    mov rax,[rsp + 16]
-    mov [buf],rax
+_start:
+    mov rsi, [rsp + 16]    
+    xor rdx, rdx            
 
-    mov rax,1
-    mov rdi,1
-    mov rsi,[buf]
-    mov rdx,5
+count:
+    cmp byte [rsi + rdx], 0 
+    je write
+    inc rdx
+    jmp count
+
+write:
+    mov rax, 1             
+    mov rdi, 1              
     syscall
 
-    mov rax,60
-    mov rdi,0
+    mov rax, 60             
+    xor rdi, rdi            
     syscall
