@@ -5,42 +5,36 @@ section .text
 global _start
 
 _start:
+    cmp qword [rsp], 3
+    jne error
+
     mov rsi, [rsp + 16]
-    xor r8, r8
+    call parse_number
+    jc error
+    mov r12, rax
 
-parse_arg1:
-    movzx rax, byte [rsi]
-    cmp al, 0
-    je parse_arg2
-    sub rax, '0'
-    imul r8, r8, 10
-    add r8, rax
-    inc rsi
-    jmp parse_arg1
-
-parse_arg2:
     mov rsi, [rsp + 24]
-    xor r9, r9
-
-parse_arg2_loop:
-    movzx rax, byte [rsi]
-    cmp al, 0
-    je addition
-    sub rax, '0'
-    imul r9, r9, 10
-    add r9, rax
-    inc rsi
-    jmp parse_arg2_loop
+    call parse_number
+    jc error
 
 addition:
-    add r8, r9
-    mov rax, r8
+    add rax, r12
+    test rax, rax
+    jns positive
+    neg rax
+    mov r11, 1
+    jmp convert_start
+
+positive:
+    xor r11, r11
+
+convert_start:
     mov rsi, buf
     add rsi, 32
     dec rsi
-    mov byte [rsi], 10     
+    mov byte [rsi], 10
     xor rcx, rcx
-    inc rcx                
+    inc rcx
     mov r10, 10
 
 convert:
@@ -53,10 +47,62 @@ convert:
     cmp rax, 0
     jne convert
 
+    cmp r11, 0
+    je write
+    dec rsi
+    mov byte [rsi], '-'
+    inc rcx
+
+write:
     mov rax, 1
     mov rdi, 1
     mov rdx, rcx
     syscall
     mov rax, 60
     xor rdi, rdi
+    syscall
+
+parse_number:
+    xor rax, rax
+    xor rcx, rcx
+    xor r8, r8
+
+    cmp byte [rsi], '-'
+    jne parse_digit
+    inc rsi
+    mov rcx, 1
+
+parse_digit:
+    movzx rdx, byte [rsi]
+    cmp dl, 0
+    je parse_end
+    cmp dl, '0'
+    jb parse_invalid
+    cmp dl, '9'
+    ja parse_invalid
+    imul rax, rax, 10
+    sub rdx, '0'
+    add rax, rdx
+    inc r8
+    inc rsi
+    jmp parse_digit
+
+parse_end:
+    cmp r8, 0
+    je parse_invalid
+    cmp rcx, 0
+    je parse_valid
+    neg rax
+
+parse_valid:
+    clc
+    ret
+
+parse_invalid:
+    stc
+    ret
+
+error:
+    mov rax, 60
+    mov rdi, 1
     syscall
