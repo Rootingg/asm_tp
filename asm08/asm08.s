@@ -5,21 +5,24 @@ section .text
 global _start
 
 _start:
+    cmp qword [rsp], 2
+    jne error
+
     mov rsi, [rsp + 16]
     xor r8, r8
 
     movzx rax, byte [rsi]
     cmp al, '-'
-    je exit                 
+    je error
 
 parse_n:
     movzx rax, byte [rsi]
     cmp al, 0
     je got_n
     cmp al, '0'
-    jb exit                
+    jb error
     cmp al, '9'
-    ja exit
+    ja error
     sub rax, '0'
     imul r8, r8, 10
     add r8, rax
@@ -62,8 +65,14 @@ convert:
     mov rdi, 1
     mov rdx, rcx
     syscall
+    jmp done
 
-exit:
+error:
+    mov rax, 60
+    mov rdi, 1
+    syscall
+
+done:
     mov rax, 60
     xor rdi, rdi
     syscall
