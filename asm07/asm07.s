@@ -17,6 +17,8 @@ _start:
 
 .parse:
     movzx rax, byte [rsi]
+    cmp al, 0
+    je .parsed
     cmp al, 10
     je .parsed
     cmp al, '0'
