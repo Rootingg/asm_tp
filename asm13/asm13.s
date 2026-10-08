@@ -21,7 +21,11 @@ grow_buffer:
 
 read_input:
     cmp r13, r14
-    je grow_buffer
+    jne do_read
+    add r14, 4096
+    jmp grow_buffer
+
+do_read:
     mov rax, 0
     mov rdi, 0
     lea rsi, [r12 + r13]

@@ -80,6 +80,8 @@ convert:
     mov rdx, rcx
     inc rdx
     syscall
+    cmp rax, rdx
+    jne exit_error
     xor rdi, rdi
     jmp exit
 

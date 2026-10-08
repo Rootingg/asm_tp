@@ -64,6 +64,8 @@ write_result:
     mov rdx, rcx
     inc rdx
     syscall
+    cmp rax, rdx
+    jne invalid_number
     xor rdi, rdi
     jmp exit
 

@@ -24,7 +24,11 @@ grow_buffer:
 
 read_input:
     cmp r13, r14
-    je grow_buffer
+    jne do_read
+    add r14, 4096
+    jmp grow_buffer
+
+do_read:
     mov rax, 0
     mov rdi, 0
     lea rsi, [r12 + r13]
@@ -73,6 +77,8 @@ write_string:
     mov rsi, r12
     mov rdx, r13
     syscall
+    cmp rax, rdx
+    jne exit_error
 
 write_newline:
     mov rax, 1
@@ -80,6 +86,8 @@ write_newline:
     mov rsi, newline
     mov rdx, 1
     syscall
+    cmp rax, rdx
+    jne exit_error
     xor rdi, rdi
     jmp exit
 

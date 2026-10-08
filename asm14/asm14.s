@@ -9,11 +9,14 @@ _start:
     cmp     qword [rsp], 2
     jne     .bad_args
 
+.open_retry:
     mov     rdi, [rsp + 16]
     mov     rsi, 0x241
     mov     rdx, 0o644
     mov     rax, 2
     syscall
+    cmp     rax, -4
+    je      .open_retry
     test    rax, rax
     js      .error
 
