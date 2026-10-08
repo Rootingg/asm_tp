@@ -5,14 +5,21 @@ section .text
 global _start
 
 _start:
+	cmp qword [rsp], 2
+	jb error
+	cmp qword [rsp], 3
+	ja error
+
 	mov rsi, [rsp + 16]
 	cmp byte [rsi], '-'
 	jne parse_number
 
 	cmp byte [rsi + 1], 'b'
-	jne exit
+	jne error
 	cmp byte [rsi + 2], 0
-	jne exit
+	jne error
+	cmp qword [rsp], 3
+	jne error
 	mov r12, 2
 	mov rsi, [rsp + 24]
 	jmp parse_number
@@ -26,9 +33,9 @@ parse_digit:
 	cmp dl, 0
 	je convert
 	cmp dl, '0'
-	jb exit
+	jb error
 	cmp dl, '9'
-	ja exit
+	ja error
 	imul rax, rax, 10
 	sub dl, '0'
 	add rax, rdx
@@ -70,6 +77,12 @@ store_digit:
 	mov rdi, 1
 	lea rdx, [buffer + 32]
 	sub rdx, rsi
+	syscall
+	jmp exit
+
+error:
+	mov rax, 60
+	mov rdi, 1
 	syscall
 
 exit:

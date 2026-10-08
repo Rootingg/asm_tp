@@ -71,6 +71,7 @@ parse_number:
     xor rax, rax
     xor rcx, rcx
     xor r8, r8
+    mov r9, 922337203685477580
 
     cmp byte [rsi], '-'
     jne parse_digits
@@ -85,8 +86,22 @@ parse_digits:
     jb parse_invalid
     cmp dl, '9'
     ja parse_invalid
-    imul rax, rax, 10
     sub dl, '0'
+    cmp rax, r9
+    ja parse_invalid
+    jne add_digit
+    cmp rcx, 0
+    jz positive_limit
+    cmp dl, 7
+    ja parse_invalid
+    jmp add_digit
+
+positive_limit:
+    cmp dl, 7
+    ja parse_invalid
+
+add_digit:
+    imul rax, rax, 10
     add rax, rdx
     inc r8
     inc rsi

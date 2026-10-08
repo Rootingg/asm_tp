@@ -1,24 +1,24 @@
 section .bss
-    buf resb 16
+    buf resb 1
 
 section .text
 global _start
 
 _start:
-    mov rax, 0
-    mov rdi, 0
-    mov rsi, buf
-    mov rdx, 16
-    syscall
-
-    mov rsi, buf
     xor r8, r8
     xor r9, r9
 
-.parse:
-    movzx rax, byte [rsi]
-    cmp al, 0
-    je .parsed
+read:
+    mov rax, 0
+    mov rdi, 0
+    mov rsi, buf
+    mov rdx, 1
+    syscall
+    test rax, rax
+    js .bad
+    jz .parsed
+
+    movzx rax, byte [buf]
     cmp al, 10
     je .parsed
     cmp al, '0'
@@ -26,11 +26,18 @@ _start:
     cmp al, '9'
     ja .bad
     sub rax, '0'
+    mov r10, 1844674407370955161
+    cmp r8, r10
+    ja .bad
+    jne .add_digit
+    cmp rax, 5
+    ja .bad
+
+.add_digit:
     imul r8, r8, 10
     add r8, rax
     inc r9
-    inc rsi
-    jmp .parse
+    jmp read
 
 .parsed:
     cmp r9, 0
