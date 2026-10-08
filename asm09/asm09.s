@@ -12,7 +12,7 @@ _start:
 
 	mov rsi, [rsp + 16]
 	cmp byte [rsi], '-'
-	jne parse_number
+	jne check_decimal_arguments
 
 	cmp byte [rsi + 1], 'b'
 	jne error
@@ -22,6 +22,11 @@ _start:
 	jne error
 	mov r12, 2
 	mov rsi, [rsp + 24]
+	jmp parse_number
+
+check_decimal_arguments:
+	cmp qword [rsp], 2
+	jne error
 	jmp parse_number
 
 parse_number:
