@@ -92,7 +92,7 @@ parse_digits:
     jne add_digit
     cmp rcx, 0
     jz positive_limit
-    cmp dl, 7
+    cmp dl, 8
     ja parse_invalid
     jmp add_digit
 
