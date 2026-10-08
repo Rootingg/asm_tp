@@ -37,11 +37,11 @@ read:
     cmp al, '9'
     ja .bad
     sub rax, '0'
-    mov r10, 1844674407370955161
+    mov r10, 922337203685477580
     cmp r8, r10
     ja .bad
     jne .add_digit
-    cmp rax, 5
+    cmp rax, 7
     ja .bad
 
 .add_digit:

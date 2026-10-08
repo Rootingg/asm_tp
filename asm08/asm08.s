@@ -6,14 +6,17 @@ global _start
 
 _start:
     cmp qword [rsp], 2
-    jne error
+    jne usage
 
     mov rsi, [rsp + 16]
     xor r8, r8
+    xor r9, r9
+    xor r12, r12
 
-    movzx rax, byte [rsi]
-    cmp al, '-'
-    je error
+    cmp byte [rsi], '-'
+    jne parse_n
+    inc rsi
+    mov r12, 1
 
 parse_n:
     movzx rax, byte [rsi]
@@ -24,23 +27,57 @@ parse_n:
     cmp al, '9'
     ja error
     sub rax, '0'
+    mov r10, 922337203685477580
+    cmp r8, r10
+    ja error
+    jne add_digit
+    test r12, r12
+    jnz neg_limit
+    cmp rax, 7
+    ja error
+    jmp add_digit
+
+neg_limit:
+    cmp rax, 8
+    ja error
+
+add_digit:
     imul r8, r8, 10
     add r8, rax
+    inc r9
     inc rsi
     jmp parse_n
 
 got_n:
+    test r9, r9
+    jz error
+    test r12, r12
+    jnz empty_range
+
     xor r9, r9
     cmp r8, 2
-    jb print                
+    jb print
 
-    xor rcx, rcx
-sum_loop:
-    inc rcx
-    cmp rcx, r8
-    je print
-    add r9, rcx
-    jmp sum_loop
+    mov rax, r8
+    test rax, 1
+    jnz odd_n
+    shr rax, 1
+    mov rcx, r8
+    dec rcx
+    mul rcx
+    mov r9, rax
+    jmp print
+
+odd_n:
+    mov rcx, r8
+    dec rcx
+    shr rcx, 1
+    mul rcx
+    mov r9, rax
+    jmp print
+
+empty_range:
+    xor r9, r9
 
 print:
     mov rax, r9
@@ -66,6 +103,11 @@ convert:
     mov rdx, rcx
     syscall
     jmp done
+
+usage:
+    mov rax, 60
+    mov rdi, 2
+    syscall
 
 error:
     mov rax, 60
