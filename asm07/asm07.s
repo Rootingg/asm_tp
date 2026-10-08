@@ -7,6 +7,7 @@ global _start
 _start:
     xor r8, r8
     xor r9, r9
+    xor r12, r12
 
 read:
     mov rax, 0
@@ -21,6 +22,16 @@ read:
     movzx rax, byte [buf]
     cmp al, 10
     je .parsed
+    cmp al, '-'
+    jne .check_digit
+    cmp r9, 0
+    jne .bad
+    test r12, r12
+    jnz .bad
+    mov r12, 1
+    jmp read
+
+.check_digit:
     cmp al, '0'
     jb .bad
     cmp al, '9'
@@ -42,6 +53,8 @@ read:
 .parsed:
     cmp r9, 0
     je .bad
+    test r12, r12
+    jnz .not_prime
     cmp r8, 2
     jb .not_prime
     je .prime
