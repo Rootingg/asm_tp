@@ -41,7 +41,14 @@ read:
     cmp r8, r10
     ja .bad
     jne .add_digit
+    test r12, r12
+    jnz .neg_limit
     cmp rax, 7
+    ja .bad
+    jmp .add_digit
+
+.neg_limit:
+    cmp rax, 8
     ja .bad
 
 .add_digit:
